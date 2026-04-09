@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 import { Flag, Trophy, AlertTriangle, TrendingUp, TrendingDown, Clock } from "lucide-react";
+import { motion } from "framer-motion";
 
 function RaceSummaryBrief({ race, results }: { race: any; results: any[] }) {
   const gtpResults = results.filter((r) => r.carClass === "GTP");
@@ -218,7 +219,11 @@ export default function RaceWeek() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <motion.div
+      className="p-6 space-y-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}>
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
@@ -305,6 +310,6 @@ export default function RaceWeek() {
           </CardContent>
         </Card>
       )}
-    </div>
+    </motion.div>
   );
 }

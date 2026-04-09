@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Link } from "wouter";
+import { motion } from "framer-motion";
 import { Calendar, MapPin, Flag, Clock, AlertTriangle, ChevronRight, Car } from "lucide-react";
 
 function RaceCard({ race }: { race: any }) {
@@ -304,7 +305,11 @@ export default function RaceExplorer({ params }: { params?: { id?: string } }) {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <motion.div
+      className="p-6 space-y-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}>
       <div>
         <h1 className="text-xl font-bold tracking-tight">Race Explorer</h1>
         <p className="text-sm text-muted-foreground">Browse all 2026 season sessions and results</p>
@@ -339,6 +344,6 @@ export default function RaceExplorer({ params }: { params?: { id?: string } }) {
           </div>
         </>
       )}
-    </div>
+    </motion.div>
   );
 }

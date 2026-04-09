@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { TrendingUp, TrendingDown, Minus, Shield, Zap, Target, BarChart3 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell, RadarChart, PolarGrid, PolarAngleAxis, Radar, Legend } from "recharts";
 
@@ -130,7 +131,11 @@ export default function Trends() {
   const perfect_reliability = drivers?.filter((d: any) => d.reliabilityScore === 100).length || 0;
 
   return (
-    <div className="p-6 space-y-6">
+    <motion.div
+      className="p-6 space-y-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}>
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold tracking-tight">Trend Dashboard</h1>
@@ -207,6 +212,6 @@ export default function Trends() {
           {drivers && <DriverTable drivers={drivers} />}
         </CardContent>
       </Card>
-    </div>
+    </motion.div>
   );
 }

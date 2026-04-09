@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useState } from "react";
 import { Trophy, TrendingUp, TrendingDown, Minus, Zap, Target } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, CartesianGrid } from "recharts";
+import { motion } from "framer-motion";
 
 function PointsDelta({ standings }: { standings: any[] }) {
   if (!standings.length) return null;
@@ -199,7 +200,11 @@ export default function TitleFight() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <motion.div
+      className="p-6 space-y-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}>
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold tracking-tight">Title Fight Analysis</h1>
@@ -243,12 +248,20 @@ export default function TitleFight() {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <motion.div
+        className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.15 }}>
         {driverStandings && <TitleContenders standings={driverStandings} />}
         {driverStandings && <PointsDelta standings={driverStandings} />}
-      </div>
+      </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <motion.div
+        className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.15 }}>
         {mfgStandings && mfgStandings.length > 0 && <ManufacturerBattle standings={mfgStandings} />}
 
         {/* Team Standings */}
@@ -281,7 +294,7 @@ export default function TitleFight() {
             </CardContent>
           </Card>
         )}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

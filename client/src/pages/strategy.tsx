@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useState } from "react";
 import { Fuel, Timer, Wrench, AlertTriangle } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell, ScatterChart, Scatter, ZAxis } from "recharts";
+import { motion } from "framer-motion";
 
 function StintLengthChart({ stints }: { stints: any[] }) {
   // Group stints by car number
@@ -178,7 +179,11 @@ export default function Strategy() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <motion.div
+      className="p-6 space-y-6"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}>
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold tracking-tight">Strategy Dashboard</h1>
@@ -295,6 +300,6 @@ export default function Strategy() {
           </CardContent>
         </Card>
       )}
-    </div>
+    </motion.div>
   );
 }
