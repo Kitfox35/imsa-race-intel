@@ -56,6 +56,10 @@ export default function Admin() {
   const [redFlags, setRedFlags] = useState("");
   const [status, setStatus] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [unlocked, setUnlocked] = useState(false);
+  const [password, setPassword] = useState("");
+  const [passwordError, setPasswordError] = useState(false);
+
 
   const { data: races } = useQuery({
     queryKey: ["/api/races"],
@@ -111,7 +115,53 @@ export default function Admin() {
   }
 
   const selectedRaceData = races?.find((r: any) => String(r.id) === selectedRace);
-
+    if (!unlocked) {
+        return (
+        <motion.div
+            className="p-6 flex items-center justify-center min-h-[60vh]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4 }}
+        >
+            <Card className="border-border/50 w-full max-w-sm">
+                <CardContent className="p-6 space-y-4">
+                    <div className="text-center">
+                        <ShieldCheck className="w-8 h-8 text-primary mx-auto mb-2" />
+                        <h2 className="text-base font-bold">Race Admin</h2>
+                        <p className="text-xs text-muted-foreground mt-1">Enter password to continue</p>
+                </div>
+                <input
+                type="password"
+                value={password}
+                onChange={e => { setPassword(e.target.value); setPasswordError(false); }}
+                onKeyDown={e => {
+                    if (e.key === "Enter") {
+                    if (password === "admin") setUnlocked(true);
+                    else setPasswordError(true);
+                    }
+                }}
+                placeholder="Password"
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-center"
+                data-testid="input-password"
+                />
+                {passwordError && (
+                <p className="text-xs text-red-400 text-center">Wrong password</p>
+                )}
+                <button
+                onClick={() => {
+                    if (password === "admin") setUnlocked(true);
+                    else setPasswordError(true);
+                }}
+                className="w-full px-4 py-2 rounded-md bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary/90 transition-colors"
+                data-testid="button-unlock"
+                >
+                Unlock
+                </button>
+            </CardContent>
+            </Card>
+        </motion.div>
+        );
+    }
   return (
     <motion.div
       className="p-6 space-y-6 max-w-3xl"
