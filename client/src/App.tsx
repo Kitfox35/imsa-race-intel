@@ -17,6 +17,8 @@ import {
   ShieldCheck,
   Menu,
   X,
+  Sun,
+  Moon,
 } from "lucide-react";
 
 import Dashboard from "./pages/dashboard";
@@ -37,6 +39,54 @@ function AppLogo() {
       <path d="M14 8h3l4 10-4 6h-3l4-6-4-10z" fill="white" opacity="0.9" />
       <path d="M21 8h3v16h-3V8z" fill="white" opacity="0.8" />
     </svg>
+  );
+}
+
+function ThemeToggle() {
+  const [dark, setDark] = useState(() => {
+    if (typeof window !== "undefined") {
+      return document.documentElement.classList.contains("dark") ||
+        window.matchMedia("(prefers-color-scheme: dark)").matches;
+    }
+    return true;
+  });
+
+  const [animating, setAnimating] = useState(false);
+
+  useEffect(() => {
+    if (dark) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [dark]);
+
+  function toggle() {
+    setAnimating(true);
+    setTimeout(() => {
+      setDark(!dark);
+      setTimeout(() => setAnimating(false), 300);
+    }, 150);
+  }
+
+  return (
+    <button
+      onClick={toggle}
+      className="relative p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors overflow-hidden"
+      data-testid="theme-toggle"
+    >
+      <div
+        className="transition-all duration-300 ease-in-out"
+        style={{
+          transform: animating
+            ? "scale(0) rotate(180deg)"
+            : "scale(1) rotate(0deg)",
+          opacity: animating ? 0 : 1,
+        }}
+      >
+        {dark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+      </div>
+    </button>
   );
 }
 
@@ -64,14 +114,12 @@ function Sidebar({
 }) {
   const [location] = useLocation();
 
-  // Close mobile menu on route change
   useEffect(() => {
     setMobileOpen(false);
   }, [location]);
 
   return (
     <>
-      {/* Mobile backdrop */}
       {mobileOpen && (
         <div
           className="fixed inset-0 bg-black/60 z-40 md:hidden"
@@ -97,7 +145,6 @@ function Sidebar({
               </div>
             )}
           </div>
-          {/* Close button on mobile */}
           <button
             className="md:hidden p-1 rounded text-muted-foreground hover:text-foreground"
             onClick={() => setMobileOpen(false)}
@@ -128,11 +175,12 @@ function Sidebar({
           })}
         </nav>
 
-        <div className="border-t border-border p-2 hidden md:block">
+        <div className="border-t border-border p-2 hidden md:flex items-center justify-between">
+          <ThemeToggle />
           <button
             data-testid="toggle-sidebar"
             onClick={() => setCollapsed(!collapsed)}
-            className="flex items-center justify-center w-full py-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+            className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
           >
             {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
           </button>
@@ -156,6 +204,7 @@ function MobileHeader({ onMenuClick }: { onMenuClick: () => void }) {
         <AppLogo />
         <span className="text-sm font-bold tracking-tight">IMSA INTEL</span>
       </div>
+      <ThemeToggle />
     </header>
   );
 }
