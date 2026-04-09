@@ -11,9 +11,11 @@ import {
   TrendingUp,
   Gauge,
   Search,
+  Users,
   ChevronLeft,
   ChevronRight,
   Flag,
+  icons,
 } from "lucide-react";
 
 import Dashboard from "./pages/dashboard";
@@ -23,6 +25,8 @@ import Trends from "./pages/trends";
 import Strategy from "./pages/strategy";
 import RaceExplorer from "./pages/race-explorer";
 import NotFound from "./pages/not-found";
+import Teams from "./pages/teams";
+import { Label } from "recharts";
 
 function AppLogo() {
   return (
@@ -42,6 +46,7 @@ const navItems = [
   { path: "/trends", label: "Trends", icon: TrendingUp },
   { path: "/strategy", label: "Strategy", icon: Gauge },
   { path: "/race-explorer", label: "Race Explorer", icon: Search },
+  { path: "/teams", label: "Teams & Cars", icon: Users},
 ];
 
 function Sidebar({ collapsed, setCollapsed }: { collapsed: boolean; setCollapsed: (v: boolean) => void }) {
@@ -120,6 +125,7 @@ function AppLayout() {
             <Route path="/race-explorer" component={RaceExplorer} />
             <Route path="/race-explorer/:id" component={RaceExplorer} />
             <Route component={NotFound} />
+            <Route path="/teams" component={Teams} />
           </Switch>
         </div>
       </main>
