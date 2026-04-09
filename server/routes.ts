@@ -93,4 +93,53 @@ export async function registerRoutes(server: Server, app: Express) {
       seasonComplete: completedRaces.length === races.length,
     });
   });
+
+// Admin: add race results
+  app.post("/api/admin/results", (req, res) => {
+    const { raceId, carClass, results } = req.body;
+    if (!raceId || !carClass || !results || !Array.isArray(results)) {
+      res.status(400).json({ error: "Missing raceId, carClass, or results" });
+      return;
+    }
+
+    let added = 0;
+    for (const r of results) {
+      storage.createResult({
+        raceId: parseInt(raceId),
+        carClass,
+        position: r.position,
+        carNumber: r.carNumber,
+        drivers: JSON.stringify(r.drivers),
+        team: r.team,
+        manufacturer: r.manufacturer || "",
+        chassisModel: r.chassis || "",
+        lapsCompleted: r.laps || 0,
+        timeOrGap: r.gap || "",
+        pitStops: r.pits || 0,
+        points: r.points || 0,
+        status: r.status || "Finished",
+        qualiPosition: r.quali || 0,
+        positionsGained: r.gained || 0,
+      });
+      added++;
+    }
+
+    res.json({ success: true, added });
+  });
+
+  // Admin: update race laps (mark race as completed)
+  app.post("/api/admin/race-laps", (req, res) => {
+    const { raceId, laps, safetyCars, redFlags } = req.body;
+    if (!raceId || !laps) {
+      res.status(400).json({ error: "Missing raceId or laps" });
+      return;
+    }
+
+    const db = require("better-sqlite3")("imsa.db");
+    db.prepare("UPDATE races SET laps = ?, safety_cars = ?, red_flags = ? WHERE id = ?")
+      .run(laps, safetyCars || 0, redFlags || 0, raceId);
+    db.close();
+
+    res.json({ success: true });
+  });
 }

@@ -14,10 +14,10 @@ import {
   Users,
   ChevronLeft,
   ChevronRight,
+  ShieldCheck,
   Flag,
   icons,
 } from "lucide-react";
-
 import Dashboard from "./pages/dashboard";
 import RaceWeek from "./pages/race-week";
 import TitleFight from "./pages/title-fight";
@@ -26,6 +26,7 @@ import Strategy from "./pages/strategy";
 import RaceExplorer from "./pages/race-explorer";
 import NotFound from "./pages/not-found";
 import Teams from "@/pages/teams";
+import Admin from "@/pages/admin";
 import { Label } from "recharts";
 
 function AppLogo() {
@@ -47,6 +48,7 @@ const navItems = [
   { path: "/strategy", label: "Strategy", icon: Gauge },
   { path: "/race-explorer", label: "Race Explorer", icon: Search },
   { path: "/teams", label: "Teams & Cars", icon: Users},
+  { path: "/admin", label: "Race Admin", icon: ShieldCheck},
 ];
 
 function Sidebar({ collapsed, setCollapsed }: { collapsed: boolean; setCollapsed: (v: boolean) => void }) {
@@ -125,6 +127,7 @@ function AppLayout() {
             <Route path="/race-explorer" component={RaceExplorer} />
             <Route path="/race-explorer/:id" component={RaceExplorer} />
             <Route path="/teams" component={Teams} />
+            <Route path="/admin" component={Admin} />
             <Route component={NotFound} />
           </Switch>
         </div>
