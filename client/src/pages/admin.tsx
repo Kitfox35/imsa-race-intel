@@ -60,7 +60,6 @@ export default function Admin() {
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState(false);
 
-
   const { data: races } = useQuery({
     queryKey: ["/api/races"],
     queryFn: async () => {
@@ -81,7 +80,6 @@ export default function Admin() {
     setStatus(null);
 
     try {
-      // Submit results
       const res = await apiRequest("POST", "/api/admin/results", {
         raceId: selectedRace,
         carClass: selectedClass,
@@ -89,7 +87,6 @@ export default function Admin() {
       });
       const data = await res.json();
 
-      // Update race laps if provided
       if (raceLaps) {
         await apiRequest("POST", "/api/admin/race-laps", {
           raceId: parseInt(selectedRace),
@@ -99,7 +96,6 @@ export default function Admin() {
         });
       }
 
-      // Invalidate all queries so the site refreshes
       queryClient.invalidateQueries();
 
       setStatus({ type: "success", message: `Added ${data.added} results for ${selectedClass}.` });
@@ -115,59 +111,114 @@ export default function Admin() {
   }
 
   const selectedRaceData = races?.find((r: any) => String(r.id) === selectedRace);
-    if (!unlocked) {
-        return (
+
+  // Password lock screen
+  if (!unlocked) {
+    return (
+      <motion.div
+        className="p-6 flex items-center justify-center min-h-[60vh]"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+      >
         <motion.div
-            className="p-6 flex items-center justify-center min-h-[60vh]"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.4 }}
+          initial={{ y: 20 }}
+          animate={{ y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
         >
-            <Card className="border-border/50 w-full max-w-sm">
-                <CardContent className="p-6 space-y-4">
-                    <div className="text-center">
-                        <ShieldCheck className="w-8 h-8 text-primary mx-auto mb-2" />
-                        <h2 className="text-base font-bold">Race Admin</h2>
-                        <p className="text-xs text-muted-foreground mt-1">Enter password to continue</p>
-                </div>
-                <input
-                type="password"
-                value={password}
-                onChange={e => { setPassword(e.target.value); setPasswordError(false); }}
-                onKeyDown={e => {
-                    if (e.key === "Enter") {
-                    if (password === "admin") setUnlocked(true);
-                    else setPasswordError(true);
-                    }
-                }}
-                placeholder="Password"
-                className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-center"
-                data-testid="input-password"
-                />
+          <Card className="border-border/50 w-full max-w-sm">
+            <CardContent className="p-6 space-y-4">
+              <motion.div
+                className="text-center"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.2 }}
+              >
+                <motion.div
+                  animate={
+                    password === "admin"
+                      ? { rotate: [0, -10, 10, 0], scale: [1, 1.3, 1], y: [0, -8, 0] }
+                      : { rotate: [0, -10, 10, -5, 5, 0] }
+                  }
+                  transition={
+                    password === "admin"
+                      ? { duration: 0.5 }
+                      : { duration: 0.6, delay: 0.5 }
+                  }
+                >
+                  <ShieldCheck className={`w-8 h-8 mx-auto mb-2 transition-colors duration-300 ${password === "admin" ? "text-green-400" : "text-primary"}`} />
+                </motion.div>
+                <h2 className="text-base font-bold">Race Admin</h2>
+                <p className="text-xs text-muted-foreground mt-1">Enter password to continue</p>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3, delay: 0.4 }}
+                className="space-y-4"
+              >
+                <motion.div
+                  animate={passwordError ? { x: [0, -12, 12, -8, 8, -4, 4, 0] } : {}}
+                  transition={{ duration: 0.4 }}
+                >
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={e => { setPassword(e.target.value); setPasswordError(false); }}
+                    onKeyDown={e => {
+                      if (e.key === "Enter") {
+                        if (password === "admin") {
+                          setPasswordError(false);
+                          setTimeout(() => setUnlocked(true), 600);
+                        } else {
+                          setPasswordError(true);
+                        }
+                      }
+                    }}
+                    placeholder="Password"
+                    className={`w-full rounded-md border bg-background px-3 py-2 text-sm text-center transition-colors duration-300 ${passwordError ? "border-red-500" : "border-border"}`}
+                    data-testid="input-password"
+                  />
+                </motion.div>
                 {passwordError && (
-                <p className="text-xs text-red-400 text-center">Wrong password</p>
+                  <motion.p
+                    className="text-xs text-red-400 text-center"
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: [0, -5, 5, -3, 3, 0] }}
+                    transition={{ duration: 0.4 }}
+                  >
+                    Wrong password
+                  </motion.p>
                 )}
                 <button
-                onClick={() => {
-                    if (password === "admin") setUnlocked(true);
-                    else setPasswordError(true);
-                }}
-                className="w-full px-4 py-2 rounded-md bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary/90 transition-colors"
-                data-testid="button-unlock"
+                  onClick={() => {
+                    if (password === "admin") {
+                      setPasswordError(false);
+                      setTimeout(() => setUnlocked(true), 600);
+                    } else {
+                      setPasswordError(true);
+                    }
+                  }}
+                  className="w-full px-4 py-2 rounded-md bg-primary text-primary-foreground font-semibold text-sm hover:bg-primary/90 transition-colors"
+                  data-testid="button-unlock"
                 >
-                Unlock
+                  Unlock
                 </button>
+              </motion.div>
             </CardContent>
-            </Card>
+          </Card>
         </motion.div>
-        );
-    }
+      </motion.div>
+    );
+  }
+
+  // Main admin form
   return (
     <motion.div
       className="p-6 space-y-6 max-w-3xl"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.4 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
     >
       <div>
         <h1 className="text-xl font-bold tracking-tight flex items-center gap-2">
@@ -292,7 +343,11 @@ export default function Admin() {
 
           {/* Preview */}
           {parsed.length > 0 && (
-            <div>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
               <p className="text-xs font-semibold text-muted-foreground mb-2">Preview ({parsed.length} entries):</p>
               <div className="max-h-48 overflow-y-auto rounded border border-border/50">
                 <table className="w-full text-xs">
@@ -322,7 +377,7 @@ export default function Admin() {
                   </tbody>
                 </table>
               </div>
-            </div>
+            </motion.div>
           )}
         </CardContent>
       </Card>
@@ -339,10 +394,26 @@ export default function Admin() {
         </button>
 
         {status && (
-          <div className={`flex items-center gap-1.5 text-sm ${status.type === "success" ? "text-green-400" : "text-red-400"}`}>
-            {status.type === "success" ? <CheckCircle className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+          <motion.div
+            className={`flex items-center gap-1.5 text-sm ${status.type === "success" ? "text-green-400" : "text-red-400"}`}
+            initial={{ opacity: 0, scale: 0.8, x: -10 }}
+            animate={{ opacity: 1, scale: 1, x: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3, type: "spring", stiffness: 200 }}
+          >
+            {status.type === "success" ? (
+              <motion.div
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ duration: 0.5, type: "spring", stiffness: 200 }}
+              >
+                <CheckCircle className="w-5 h-5" />
+              </motion.div>
+            ) : (
+              <AlertCircle className="w-4 h-4" />
+            )}
             {status.message}
-          </div>
+          </motion.div>
         )}
       </div>
     </motion.div>
