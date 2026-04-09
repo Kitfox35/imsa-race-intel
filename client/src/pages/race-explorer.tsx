@@ -82,7 +82,7 @@ function RaceDetailView({ raceId }: { raceId: string }) {
     return <div className="space-y-4"><Skeleton className="h-32" /><Skeleton className="h-64" /></div>;
   }
 
-  const classes = [...new Set(results?.map((r: any) => r.carClass) || [])];
+  const classes = [...new Set(results?.map((r: any) => r.carClass) || [])] as string[];
 
   return (
     <div className="space-y-6">
@@ -123,7 +123,7 @@ function RaceDetailView({ raceId }: { raceId: string }) {
       )}
 
       {/* Session Data */}
-      <Tabs defaultValue={classes[0] || "GTP"} className="space-y-4">
+      <Tabs defaultValue={classes[0] as string || "GTP"} className="space-y-4">
         <TabsList>
           {classes.map((cls: string) => (
             <TabsTrigger key={cls} value={cls} data-testid={`tab-class-${cls}`}>
@@ -132,7 +132,7 @@ function RaceDetailView({ raceId }: { raceId: string }) {
           ))}
         </TabsList>
 
-        {classes.map((cls: string) => {
+        {classes.map((cls) => {
           const classResults = results?.filter((r: any) => r.carClass === cls) || [];
           return (
             <TabsContent key={cls} value={cls}>
