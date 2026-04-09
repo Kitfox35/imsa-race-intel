@@ -124,8 +124,8 @@ function AppLayout() {
             <Route path="/strategy" component={Strategy} />
             <Route path="/race-explorer" component={RaceExplorer} />
             <Route path="/race-explorer/:id" component={RaceExplorer} />
-            <Route component={NotFound} />
             <Route path="/teams" component={Teams} />
+            <Route component={NotFound} />
           </Switch>
         </div>
       </main>
