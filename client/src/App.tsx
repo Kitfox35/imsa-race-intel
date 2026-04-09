@@ -25,7 +25,7 @@ import Trends from "./pages/trends";
 import Strategy from "./pages/strategy";
 import RaceExplorer from "./pages/race-explorer";
 import NotFound from "./pages/not-found";
-import Teams from "./pages/teams";
+import Teams from "@/pages/teams";
 import { Label } from "recharts";
 
 function AppLogo() {
