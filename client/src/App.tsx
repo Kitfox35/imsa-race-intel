@@ -3,7 +3,7 @@ import { useHashLocation } from "wouter/use-hash-location";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   LayoutDashboard,
   Newspaper,
@@ -11,23 +11,23 @@ import {
   TrendingUp,
   Gauge,
   Search,
-  Users,
   ChevronLeft,
   ChevronRight,
+  Users,
   ShieldCheck,
-  Flag,
-  icons,
+  Menu,
+  X,
 } from "lucide-react";
+
 import Dashboard from "./pages/dashboard";
 import RaceWeek from "./pages/race-week";
 import TitleFight from "./pages/title-fight";
 import Trends from "./pages/trends";
 import Strategy from "./pages/strategy";
 import RaceExplorer from "./pages/race-explorer";
+import Teams from "./pages/teams";
+import Admin from "./pages/admin";
 import NotFound from "./pages/not-found";
-import Teams from "@/pages/teams";
-import Admin from "@/pages/admin";
-import { Label } from "recharts";
 
 function AppLogo() {
   return (
@@ -47,73 +47,135 @@ const navItems = [
   { path: "/trends", label: "Trends", icon: TrendingUp },
   { path: "/strategy", label: "Strategy", icon: Gauge },
   { path: "/race-explorer", label: "Race Explorer", icon: Search },
-  { path: "/teams", label: "Teams & Cars", icon: Users},
-  { path: "/admin", label: "Race Admin", icon: ShieldCheck},
+  { path: "/teams", label: "Teams & Cars", icon: Users },
+  { path: "/admin", label: "Race Admin", icon: ShieldCheck },
 ];
 
-function Sidebar({ collapsed, setCollapsed }: { collapsed: boolean; setCollapsed: (v: boolean) => void }) {
+function Sidebar({
+  collapsed,
+  setCollapsed,
+  mobileOpen,
+  setMobileOpen,
+}: {
+  collapsed: boolean;
+  setCollapsed: (v: boolean) => void;
+  mobileOpen: boolean;
+  setMobileOpen: (v: boolean) => void;
+}) {
   const [location] = useLocation();
 
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [location]);
+
   return (
-    <aside
-      className={`fixed left-0 top-0 bottom-0 z-30 flex flex-col border-r border-border bg-sidebar transition-all duration-200 ${
-        collapsed ? "w-16" : "w-56"
-      }`}
-    >
-      <div className="flex items-center gap-3 px-4 h-14 border-b border-border">
-        <AppLogo />
-        {!collapsed && (
-          <div className="flex flex-col">
-            <span className="text-sm font-bold tracking-tight text-foreground">IMSA INTEL</span>
-            <span className="text-[10px] font-medium text-muted-foreground tracking-widest uppercase">Race Intelligence</span>
-          </div>
-        )}
-      </div>
+    <>
+      {/* Mobile backdrop */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 z-40 md:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
 
-      <nav className="flex-1 py-3 px-2 space-y-1 overflow-y-auto">
-        {navItems.map((item) => {
-          const isActive = location === item.path || (item.path !== "/" && location.startsWith(item.path));
-          const Icon = item.icon;
-          return (
-            <Link key={item.path} href={item.path}>
-              <div
-                data-testid={`nav-${item.label.toLowerCase().replace(/\s/g, "-")}`}
-                className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
-                  isActive
-                    ? "bg-primary/15 text-primary"
-                    : "text-muted-foreground hover:text-foreground hover:bg-accent"
-                }`}
-              >
-                <Icon className="w-4 h-4 shrink-0" />
-                {!collapsed && <span>{item.label}</span>}
+      <aside
+        className={`
+          fixed left-0 top-0 bottom-0 z-50 flex flex-col border-r border-border bg-sidebar transition-all duration-200
+          ${collapsed ? "w-16" : "w-56"}
+          ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
+          md:translate-x-0
+        `}
+      >
+        <div className="flex items-center justify-between px-4 h-14 border-b border-border">
+          <div className="flex items-center gap-3">
+            <AppLogo />
+            {!collapsed && (
+              <div className="flex flex-col">
+                <span className="text-sm font-bold tracking-tight text-foreground">IMSA INTEL</span>
+                <span className="text-[10px] font-medium text-muted-foreground tracking-widest uppercase">Race Intelligence</span>
               </div>
-            </Link>
-          );
-        })}
-      </nav>
+            )}
+          </div>
+          {/* Close button on mobile */}
+          <button
+            className="md:hidden p-1 rounded text-muted-foreground hover:text-foreground"
+            onClick={() => setMobileOpen(false)}
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
 
-      <div className="border-t border-border p-2">
+        <nav className="flex-1 py-3 px-2 space-y-1 overflow-y-auto">
+          {navItems.map((item) => {
+            const isActive = location === item.path || (item.path !== "/" && location.startsWith(item.path));
+            const Icon = item.icon;
+            return (
+              <Link key={item.path} href={item.path}>
+                <div
+                  data-testid={`nav-${item.label.toLowerCase().replace(/\s/g, "-")}`}
+                  className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer ${
+                    isActive
+                      ? "bg-primary/15 text-primary"
+                      : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                  }`}
+                >
+                  <Icon className="w-4 h-4 shrink-0" />
+                  {!collapsed && <span>{item.label}</span>}
+                </div>
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className="border-t border-border p-2 hidden md:block">
+          <button
+            data-testid="toggle-sidebar"
+            onClick={() => setCollapsed(!collapsed)}
+            className="flex items-center justify-center w-full py-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+          >
+            {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+          </button>
+        </div>
+      </aside>
+    </>
+  );
+}
+
+function MobileHeader({ onMenuClick }: { onMenuClick: () => void }) {
+  return (
+    <header className="fixed top-0 left-0 right-0 z-30 h-14 border-b border-border bg-sidebar flex items-center justify-between px-4 md:hidden">
+      <div className="flex items-center gap-3">
         <button
-          data-testid="toggle-sidebar"
-          onClick={() => setCollapsed(!collapsed)}
-          className="flex items-center justify-center w-full py-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+          onClick={onMenuClick}
+          className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+          data-testid="mobile-menu"
         >
-          {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+          <Menu className="w-5 h-5" />
         </button>
+        <AppLogo />
+        <span className="text-sm font-bold tracking-tight">IMSA INTEL</span>
       </div>
-    </aside>
+    </header>
   );
 }
 
 function AppLayout() {
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-background">
-      <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
+      <MobileHeader onMenuClick={() => setMobileOpen(true)} />
+      <Sidebar
+        collapsed={collapsed}
+        setCollapsed={setCollapsed}
+        mobileOpen={mobileOpen}
+        setMobileOpen={setMobileOpen}
+      />
       <main
-        className={`transition-all duration-200 ${
-          collapsed ? "ml-16" : "ml-56"
+        className={`transition-all duration-200 pt-14 md:pt-0 ${
+          collapsed ? "md:ml-16" : "md:ml-56"
         }`}
       >
         <div className="min-h-screen">
